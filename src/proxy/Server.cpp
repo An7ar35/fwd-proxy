@@ -397,10 +397,12 @@ void Server::runProxyEventLoop() {
                 ::close( event_buff[i].data.fd );
                 ::close( counterpart_fd );
 
-                //TODO disconnect
+                std::cout << "[proxy::Server::runProxyEventLoop(..)] "
+                          << "Disconnected client" << counterpart_fd
+                          << std::endl;
 
             } else {
-               //TODO error
+                ::perror( "[proxy::Server::runProxyEventLoop()] error" );
             }
         }
     }

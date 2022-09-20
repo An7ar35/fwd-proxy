@@ -13,6 +13,7 @@
 #define DEFAULT_ADDR   "127.0.0.1"
 #define CLIENT_TIMEOUT 10
 
+void printHelp();
 void handleClientInput();
 void handleServerInput();
 void handleSignal( int signo, siginfo_t * info, void * context );
@@ -40,8 +41,12 @@ int main( int argc, char **argv ) {
         {"secret", required_argument, nullptr, 's'},
     };
 
-    //TODO print guide if no args are passed
+    if( argc < 2 ) {
+        printHelp();
+        exit( EXIT_FAILURE );
+    }
 
+    bool    error        = false;
     int     option       = -1;
     int     option_index =  0;
     AppMode app_mode     = AppMode::UNDEFINED;
@@ -67,12 +72,18 @@ int main( int argc, char **argv ) {
                 security = SecurityType::SECURED;
             } break;
 
-            case '?': break;
-
-            default: abort(); //TODO just error out and return 1
+            case '?': [[fallthrough]];
+            default: {
+                error = true;
+                printHelp();
+            } break;
         }
 
         option_index = 0;
+    }
+
+    if( error ) {
+        exit( EXIT_FAILURE );
     }
 
     std::cout << "Mode  : " << app_mode << "\n"
@@ -113,6 +124,16 @@ int main( int argc, char **argv ) {
     }
 
     return 0;
+}
+
+/**
+ * Prints CLI help
+ */
+void printHelp() {
+    std::cout << "Usage:\n"
+              << "  -m, --mode <mode>       Set the mode (server/client)\n"
+              << "  -s, --secret <secret>   Set the secret (optional - client only)\n"
+              << std::endl;
 }
 
 /**
